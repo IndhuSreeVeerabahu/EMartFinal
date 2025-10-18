@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+    <title>Manage Orders - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-shopping-cart me-2"></i>E-Commerce Admin
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/products">Manage Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin/orders">Manage Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">Manage Users</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield"></i>
+                            <span sec:authentication="name">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/orders">My Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Admin Dashboard</a></li>
+                <li class="breadcrumb-item active">Manage Orders</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-shopping-bag me-2"></i>Manage Orders</h1>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-filter me-1"></i>Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="/admin/orders">All Orders</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=CREATED">Created</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=CONFIRMED">Confirmed</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=PROCESSING">Processing</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=SHIPPED">Shipped</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=DELIVERED">Delivered</a></li>
+                    <li><a class="dropdown-item" href="/admin/orders?status=CANCELLED">Cancelled</a></li>
+                </ul>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-1"></i>Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/admin/export/orders/excel">
+                            <i class="fas fa-file-excel me-2"></i>Export to Excel
+                        </a></li>
+                        <li><a class="dropdown-item" href="/admin/export/orders/pdf">
+                            <i class="fas fa-file-pdf me-2"></i>Export to PDF
+                        </a></li>
+                    </ul>
+                </div>
+                <a href="/admin/test-orders" class="btn btn-outline-warning btn-sm ms-2" title="Test Orders">
+                    <i class="fas fa-bug"></i> Test Orders
+                </a>
+                <a href="/admin/test-status-update/1" class="btn btn-outline-warning btn-sm ms-2" title="Test Status Update">
+                    <i class="fas fa-bug"></i> Test Status
+                </a>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Orders</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${orders != null and !orders.empty}">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}">
+                                    <td>
+                                        <strong th:text="${order.orderNumber}">ORD123456</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong th:text="${order.user.fullName}">John Doe</strong>
+                                            <br>
+                                            <small class="text-muted" th:text="${order.user.email}">john@example.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info" th:text="${order.orderItems.size()} + ' items'">2 items</span>
+                                    </td>
+                                    <td>
+                                        <strong th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">₹0.00</strong>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" class="d-inline">
+                                            <select name="status" class="form-select form-select-sm" 
+                                                    th:data-order-number="${order.orderNumber}"
+                                                    th:data-order-id="${order.id}"
+                                                    onchange="updateOrderStatus(this)">
+                                                <option value="CREATED" th:selected="${order.status.name() == 'CREATED'}">Created</option>
+                                                <option value="CONFIRMED" th:selected="${order.status.name() == 'CONFIRMED'}">Confirmed</option>
+                                                <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">Processing</option>
+                                                <option value="SHIPPED" th:selected="${order.status.name() == 'SHIPPED'}">Shipped</option>
+                                                <option value="DELIVERED" th:selected="${order.status.name() == 'DELIVERED'}">Delivered</option>
+                                                <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">Cancelled</option>
+                                                <option value="RETURNED" th:selected="${order.status.name() == 'RETURNED'}">Returned</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success" th:if="${order.paymentStatus.name() == 'COMPLETED'}">Paid</span>
+                                        <span class="badge bg-warning" th:if="${order.paymentStatus.name() == 'PENDING'}">Pending</span>
+                                        <span class="badge bg-danger" th:if="${order.paymentStatus.name() == 'FAILED'}">Failed</span>
+                                        <span class="badge bg-secondary" th:if="${order.paymentStatus.name() == 'CANCELLED'}">Cancelled</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}">01 Jan 2024</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" 
+                                               class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a th:href="@{/admin/orders/{id}(id=${order.id})}" 
+                                               class="btn btn-sm btn-outline-info" title="Print Invoice" 
+                                               onclick="window.open(this.href, '_blank'); return false;">
+                                                <i class="fas fa-print"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${orders == null or orders.empty}" class="text-center py-5">
+                    <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No orders found</h4>
+                    <p class="text-muted">Orders will appear here when customers make purchases.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Statistics -->
+        <!-- Order Statistics -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary" th:text="${newOrders}">0</h5>
+                        <p class="card-text">New Orders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning" th:text="${processingOrders}">0</h5>
+                        <p class="card-text">Processing</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-info" th:text="${shippedOrders}">0</h5>
+                        <p class="card-text">Shipped</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title text-success" th:text="${deliveredOrders}">0</h5>
+                        <p class="card-text">Delivered</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>E-Commerce Store - Admin Panel</h5>
+                    <p>Manage your online store efficiently.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 E-Commerce Store. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        function updateOrderStatus(selectElement) {
+            const newStatus = selectElement.value;
+            const orderNumber = selectElement.getAttribute('data-order-number');
+            const orderId = selectElement.getAttribute('data-order-id');
+            
+            // Show confirmation dialog for important status changes
+            if (newStatus === 'CANCELLED' || newStatus === 'DELIVERED') {
+                const action = newStatus === 'CANCELLED' ? 'cancel' : 'mark as delivered';
+                if (!confirm(`Are you sure you want to ${action} order ${orderNumber}?`)) {
+                    // Reset to previous value if user cancels
+                    selectElement.value = selectElement.getAttribute('data-original-value');
+                    return;
+                }
+            }
+            
+            // Show loading state
+            selectElement.disabled = true;
+            selectElement.style.opacity = '0.6';
+            
+            // Create and submit form manually to ensure parameters are sent
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/orders/' + orderId + '/status';
+            
+            const statusInput = document.createElement('input');
+            statusInput.type = 'hidden';
+            statusInput.name = 'status';
+            statusInput.value = newStatus;
+            form.appendChild(statusInput);
+            
+            // Add CSRF token if available
+            const csrfToken = document.querySelector('meta[name="_csrf"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_csrf';
+                csrfInput.value = csrfToken.getAttribute('content');
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Store original values when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusSelects = document.querySelectorAll('select[name="status"]');
+            statusSelects.forEach(select => {
+                select.setAttribute('data-original-value', select.value);
+            });
+        });
+    </script>
+</body>
+</html>

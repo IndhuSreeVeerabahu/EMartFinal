@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Reports - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-shopping-cart me-2"></i>E-Commerce Admin
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/products">Manage Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/orders">Manage Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/users">Manage Users</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-shield"></i>
+                            <span sec:authentication="name">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/orders">My Orders</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-inline">
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Admin Dashboard</a></li>
+                <li class="breadcrumb-item active">Sales Reports</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-chart-line me-2"></i>Sales Reports</h1>
+            <div class="btn-group" role="group">
+                <a href="/admin/export/orders/pdf" class="btn btn-outline-primary">
+                    <i class="fas fa-file-pdf me-1"></i>Export PDF
+                </a>
+                <a href="/admin/export/orders/excel" class="btn btn-outline-success">
+                    <i class="fas fa-file-excel me-1"></i>Export Excel
+                </a>
+            </div>
+        </div>
+
+        <!-- Revenue Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="'₹' + ${#numbers.formatDecimal(totalRevenue, 1, 2)}">₹0.00</h4>
+                                <p class="card-text">Total Revenue</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-rupee-sign fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${orders.size()}">0</h4>
+                                <p class="card-text">Total Orders</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-shopping-bag fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${deliveredOrders}">0</h4>
+                                <p class="card-text">Delivered Orders</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title" th:text="${cancelledOrders}">0</h4>
+                                <p class="card-text">Cancelled Orders</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-times-circle fa-2x opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status Chart -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Order Status Distribution
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="orderStatusChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>Order Statistics
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h5 class="text-primary" th:text="${newOrders}">0</h5>
+                                    <small class="text-muted">New Orders</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h5 class="text-warning" th:text="${processingOrders}">0</h5>
+                                    <small class="text-muted">Processing</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h5 class="text-info" th:text="${shippedOrders}">0</h5>
+                                    <small class="text-muted">Shipped</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-center">
+                                    <h5 class="text-success" th:text="${deliveredOrders}">0</h5>
+                                    <small class="text-muted">Delivered</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Recent Orders
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${orders != null and !orders.empty}">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="order : ${orders}">
+                                    <td>
+                                        <strong th:text="${order.orderNumber}">ORD123456</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong th:text="${order.user.fullName}">John Doe</strong>
+                                            <br>
+                                            <small class="text-muted" th:text="${order.user.email}">john@example.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="'₹' + ${#numbers.formatDecimal(order.totalAmount, 1, 2)}">₹0.00</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${order.status}">CREATED</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success" th:if="${order.paymentStatus.name() == 'COMPLETED'}">Paid</span>
+                                        <span class="badge bg-warning" th:if="${order.paymentStatus.name() == 'PENDING'}">Pending</span>
+                                        <span class="badge bg-danger" th:if="${order.paymentStatus.name() == 'FAILED'}">Failed</span>
+                                        <span class="badge bg-secondary" th:if="${order.paymentStatus.name() == 'CANCELLED'}">Cancelled</span>
+                                    </td>
+                                    <td th:text="${#temporals.format(order.createdAt, 'dd MMM yyyy')}">01 Jan 2024</td>
+                                    <td>
+                                        <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div th:if="${orders == null or orders.empty}" class="text-center py-4">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No orders found</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>E-Commerce Store - Admin Panel</h5>
+                    <p>Manage your online store efficiently.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 E-Commerce Store. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Order Status Chart
+        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+        const orderStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['New', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+                datasets: [{
+                    data: [
+                        /*[[${newOrders}]]*/ 0,
+                        /*[[${processingOrders}]]*/ 0,
+                        /*[[${shippedOrders}]]*/ 0,
+                        /*[[${deliveredOrders}]]*/ 0,
+                        /*[[${cancelledOrders}]]*/ 0
+                    ],
+                    backgroundColor: [
+                        '#007bff',
+                        '#ffc107',
+                        '#17a2b8',
+                        '#28a745',
+                        '#dc3545'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Export functionality is now handled by server-side endpoints
+    </script>
+</body>
+</html>

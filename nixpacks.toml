@@ -1,0 +1,5 @@
+[start]
+cmd = "java -Xms256m -Xmx512m -Dspring.profiles.active=prod -Dserver.port=${PORT:-8080} -Djava.security.egd=file:/dev/./urandom -jar app.jar"
+
+[build]
+cmds = ["mvn clean package -DskipTests", "cp target/E_Commerce-0.0.1-SNAPSHOT.jar app.jar"]

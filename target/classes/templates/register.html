@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - E-Commerce Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-shopping-cart me-2"></i>E-Commerce
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/products">Products</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                            <h2 class="card-title">Create Account</h2>
+                            <p class="text-muted">Join us today and start shopping</p>
+                        </div>
+
+                        <!-- Flash Messages -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <form th:action="@{/register}" th:object="${user}" method="post">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="firstName" th:field="*{firstName}" 
+                                               placeholder="Enter first name" required>
+                                    </div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('firstName')}" 
+                                         th:errors="*{firstName}">Error</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="lastName" th:field="*{lastName}" 
+                                               placeholder="Enter last name" required>
+                                    </div>
+                                    <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" 
+                                         th:errors="*{lastName}">Error</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-at"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="username" th:field="*{username}" 
+                                           placeholder="Enter username" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('username')}" 
+                                     th:errors="*{username}">Error</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" 
+                                           placeholder="Enter email address" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('email')}" 
+                                     th:errors="*{email}">Error</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}" 
+                                           placeholder="Enter phone number">
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" 
+                                     th:errors="*{phoneNumber}">Error</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}" 
+                                           placeholder="Enter password" required>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('password')}" 
+                                     th:errors="*{password}">Error</div>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a>
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted">
+                                Already have an account? 
+                                <a href="/login" class="text-decoration-none">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>E-Commerce Store</h5>
+                    <p>Your one-stop shop for all your needs.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 E-Commerce Store. All rights reserved.</p>
+                    <div>
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

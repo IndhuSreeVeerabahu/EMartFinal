@@ -1,0 +1,15 @@
+com\example\E_Commerce\service\ProductServiceTest.class
+com\example\E_Commerce\integration\WishlistIntegrationTest.class
+com\example\E_Commerce\service\WishlistServiceTest.class
+com\example\E_Commerce\config\IntegrationTestConfig.class
+com\example\E_Commerce\service\PaymentServiceTest.class
+com\example\E_Commerce\e2e\ECommerceE2ETest.class
+com\example\E_Commerce\service\CartServiceTest.class
+com\example\E_Commerce\service\UserServiceTest.class
+com\example\E_Commerce\controller\AdminControllerTest.class
+com\example\E_Commerce\service\OrderServiceTest.class
+com\example\E_Commerce\controller\HomeControllerTest.class
+com\example\E_Commerce\controller\WishlistControllerTest.class
+com\example\E_Commerce\config\TestConfig.class
+com\example\E_Commerce\integration\OrderWorkflowIntegrationTest.class
+com\example\E_Commerce\ECommerceApplicationTests.class
