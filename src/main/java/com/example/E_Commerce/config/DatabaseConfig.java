@@ -32,7 +32,13 @@ public class DatabaseConfig {
             if (databaseUrl.startsWith("postgresql://")) {
                 jdbcUrl = "jdbc:" + databaseUrl;
             } else if (databaseUrl.startsWith("jdbc:postgresql://")) {
-                jdbcUrl = databaseUrl;
+                // Check if URL has credentials, if not add them
+                if (!databaseUrl.contains("@")) {
+                    // URL is missing credentials, add them
+                    jdbcUrl = "jdbc:postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@shortline.proxy.rlwy.net:35449/railway";
+                } else {
+                    jdbcUrl = databaseUrl;
+                }
             } else {
                 // Fallback to new database values
                 jdbcUrl = "jdbc:postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@shortline.proxy.rlwy.net:35449/railway";
