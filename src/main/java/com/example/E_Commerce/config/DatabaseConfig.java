@@ -34,12 +34,12 @@ public class DatabaseConfig {
             } else if (databaseUrl.startsWith("jdbc:postgresql://")) {
                 jdbcUrl = databaseUrl;
             } else {
-                // Fallback to hardcoded values
-                jdbcUrl = "jdbc:postgresql://postgres:VnaiMgSgcJHPuQhkzSPmXwOSVxDfNixK@shuttle.proxy.rlwy.net:38014/railway";
+                // Fallback to new database values
+                jdbcUrl = "jdbc:postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@shortline.proxy.rlwy.net:35449/railway";
             }
         } else {
-            // Fallback to hardcoded values
-            jdbcUrl = "jdbc:postgresql://postgres:VnaiMgSgcJHPuQhkzSPmXwOSVxDfNixK@shuttle.proxy.rlwy.net:38014/railway";
+            // Fallback to new database values
+            jdbcUrl = "jdbc:postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@shortline.proxy.rlwy.net:35449/railway";
         }
         
         System.out.println("Final JDBC URL: " + jdbcUrl);
