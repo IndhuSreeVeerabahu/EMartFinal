@@ -1,0 +1,16 @@
+{
+  "SPRING_PROFILES_ACTIVE": "prod",
+  "PORT": "8080",
+  "APP_ENVIRONMENT": "production",
+  "DATABASE_URL": "postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@shortline.proxy.rlwy.net:35449/railway",
+  "DB_URL": "postgresql://postgres:dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR@postgres.railway.internal:5432/railway",
+  "DB_USERNAME": "postgres",
+  "DB_PASSWORD": "dzVSSNhjjQDshMpaVvMZapwCXnqlQrJR",
+  "ADMIN_USERNAME": "admin",
+  "ADMIN_PASSWORD": "admin123",
+  "CASHFREE_APP_ID": "TEST108283821957fe1153788f32479528382801",
+  "CASHFREE_SECRET_KEY": "cfsk_ma_test_dddc2fa7d13c09a0a5f0c9c88f26f678_f1e97d01",
+  "CASHFREE_ENVIRONMENT": "SANDBOX",
+  "CASHFREE_RETURN_URL": "https://emartfinal-production.up.railway.app/payment/success",
+  "CASHFREE_NOTIFY_URL": "https://emartfinal-production.up.railway.app/payment/webhook"
+}
