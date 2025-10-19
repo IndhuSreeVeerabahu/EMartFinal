@@ -75,11 +75,16 @@ public class PaymentService {
             logger.info("Order amount: {} INR ({} paise)", orderAmount, amountInPaise);
             logger.info("Amount conversion: {} * 100 = {} paise", orderAmount, amountInPaise);
             
+            // Verify the conversion is correct
+            BigDecimal verifyAmount = BigDecimal.valueOf(amountInPaise).divide(BigDecimal.valueOf(100));
+            logger.info("Verification: {} paise = ₹{}", amountInPaise, verifyAmount);
+            
             // Create order request
             Map<String, Object> orderRequest = new HashMap<>();
             orderRequest.put("order_id", order.getOrderNumber());
             orderRequest.put("order_amount", amountInPaise);
             orderRequest.put("order_currency", "INR");
+            orderRequest.put("order_note", "Payment for Order #" + order.getOrderNumber());
             
             // Customer details
             Map<String, Object> customerDetails = new HashMap<>();
@@ -102,6 +107,7 @@ public class PaymentService {
             
             logger.info("Making API call to Cashfree sandbox: {}", url);
             logger.info("Request payload: {}", objectMapper.writeValueAsString(orderRequest));
+            logger.info("Amount being sent to Cashfree: {} paise (₹{})", amountInPaise, orderAmount);
             
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             
