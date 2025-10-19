@@ -1,9 +1,0 @@
-[build]
-builder = "dockerfile"
-
-[deploy]
-startCommand = "java -Xms512m -Xmx1024m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=prod -Dserver.port=${PORT:-8080} -jar app.jar"
-healthcheckPath = "/actuator/health"
-healthcheckTimeout = 300
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
