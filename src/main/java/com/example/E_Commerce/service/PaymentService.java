@@ -73,6 +73,7 @@ public class PaymentService {
             
             int amountInPaise = orderAmount.multiply(BigDecimal.valueOf(100)).intValue();
             logger.info("Order amount: {} INR ({} paise)", orderAmount, amountInPaise);
+            logger.info("Amount conversion: {} * 100 = {} paise", orderAmount, amountInPaise);
             
             // Create order request
             Map<String, Object> orderRequest = new HashMap<>();
