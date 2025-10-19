@@ -224,7 +224,7 @@
                     
                     cashfree.checkout({
                         paymentSessionId: sessionId,
-                        returnUrl: 'http://localhost:8081/payment/success'
+                        returnUrl: window.location.origin + '/payment/success'
                     }).then(function(result) {
                         if (result.error) {
                             console.error('Cashfree checkout error:', result.error);
