@@ -71,18 +71,15 @@ public class PaymentService {
                 return testSessionId;
             }
             
-            int amountInPaise = orderAmount.multiply(BigDecimal.valueOf(100)).intValue();
-            logger.info("Order amount: {} INR ({} paise)", orderAmount, amountInPaise);
-            logger.info("Amount conversion: {} * 100 = {} paise", orderAmount, amountInPaise);
-            
-            // Verify the conversion is correct
-            BigDecimal verifyAmount = BigDecimal.valueOf(amountInPaise).divide(BigDecimal.valueOf(100));
-            logger.info("Verification: {} paise = ₹{}", amountInPaise, verifyAmount);
+            // Try sending amount in rupees instead of paise
+            BigDecimal amountInRupees = orderAmount;
+            logger.info("Order amount: {} INR", orderAmount);
+            logger.info("Sending amount to Cashfree: {} (rupees)", amountInRupees);
             
             // Create order request
             Map<String, Object> orderRequest = new HashMap<>();
             orderRequest.put("order_id", order.getOrderNumber());
-            orderRequest.put("order_amount", amountInPaise);
+            orderRequest.put("order_amount", amountInRupees);
             orderRequest.put("order_currency", "INR");
             orderRequest.put("order_note", "Payment for Order #" + order.getOrderNumber());
             
@@ -107,7 +104,7 @@ public class PaymentService {
             
             logger.info("Making API call to Cashfree sandbox: {}", url);
             logger.info("Request payload: {}", objectMapper.writeValueAsString(orderRequest));
-            logger.info("Amount being sent to Cashfree: {} paise (₹{})", amountInPaise, orderAmount);
+            logger.info("Amount being sent to Cashfree: {} (₹{})", amountInRupees, orderAmount);
             
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
             
