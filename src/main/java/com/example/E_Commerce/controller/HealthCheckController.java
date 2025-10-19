@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 public class HealthCheckController {
 
-    @GetMapping("/")
+    @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> root() {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "UP");
